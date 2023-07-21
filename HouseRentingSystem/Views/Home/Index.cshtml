@@ -1,8 +1,27 @@
-﻿@{
+﻿@model IndexViewModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h2 class="text-center">Welcome</h2>
+<hr />
+
+<div class="text-center row">
+    @foreach (var house in Model.Houses)
+    {
+        <div class="card col-4">
+            <img class="card-img-top" src="@house.ImageUrl" alt="House Image">
+            <div class="card-body">
+                <h5 class="card-title">@house.Title</h5>
+            </div>
+        </div>
+    }
+
+    <div class="jumbotron" style="margin-top: 50px">
+        <div class="row">
+            <h4 class="col-md-6 text-center">Total Houses: @Model.TotalHouses</h4>
+            <h4 class="col-md-6 text-center">Total Rents: @Model.TotalRents</h4>
+        </div>
+    </div>
 </div>
