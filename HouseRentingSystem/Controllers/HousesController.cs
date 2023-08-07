@@ -4,6 +4,7 @@ using HouseRentingSystem.Data;
 using HouseRentingSystem.Models.Houses;
 using HouseRentingSystem.Data.Entities;
 using HouseRentingSystem.Infrastructure;
+using HouseRentingSystem.Models;
 
 namespace HouseRentingSystem.Controllers
 {
@@ -14,38 +15,79 @@ namespace HouseRentingSystem.Controllers
         public HousesController(HouseRentingDbContext data)
             => this.data = data;
 
-        public IActionResult All()
+        public IActionResult All([FromQuery] AllHousesQueryModel query)
         {
-            var allHouses = new AllHousesViewModel()
+            var housesQuery = this.data.Houses.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Category))
             {
-                Houses = this.data.Houses
-                    .Select(h => new HouseDetailsViewModel 
-                    { 
-                        Title = h.Title,
-                        Address = h.Address,
-                        ImageUrl = h.ImageUrl
-                    })
+                housesQuery = this.data.Houses
+                    .Where(h => h.Category.Name == query.Category);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                housesQuery = housesQuery.Where(h =>
+                    h.Title.ToLower().Contains(query.SearchTerm.ToLower()) ||
+                    h.Address.ToLower().Contains(query.SearchTerm.ToLower()) ||
+                    h.Description.ToLower().Contains(query.SearchTerm.ToLower()));
+            }
+
+            housesQuery = query.Sorting switch
+            {
+                HouseSorting.Price => housesQuery.OrderBy(h => h.PricePerMonth),
+                HouseSorting.NotRentedFirst => housesQuery.OrderBy(h => h.RenterId != null)
+                                                          .ThenByDescending(h => h.Id),
+                _ => housesQuery.OrderByDescending(h => h.Id)
             };
 
-            return View(allHouses);
+            var houses = housesQuery
+                .Skip((query.CurrentPage - 1) * AllHousesQueryModel.HousesPerPage)
+                .Take(AllHousesQueryModel.HousesPerPage)
+                .Select(h => new HouseViewModel
+                {
+                    Id = h.Id,
+                    Title = h.Title,
+                    Address = h.Address,
+                    ImageUrl = h.ImageUrl,
+                    IsRented = h.RenterId != null,
+                    PricePerMonth = h.PricePerMonth
+                })
+                .ToList();
+
+            query.Houses = houses;
+
+            var houseCategories = this.data
+                .Categories
+                .Select(c => c.Name)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
+            query.Categories = houseCategories;
+
+            var totalHouses = housesQuery.Count();
+            query.TotalHousesCount = totalHouses;
+
+            return View(query);
         }
 
         [Authorize]
         public IActionResult Mine()
         {
-            var allHouses = new AllHousesViewModel()
-            {
-                Houses = this.data.Houses
-                    .Where(h => h.Agent.UserId == this.User.Id())
-                    .Select(h => new HouseDetailsViewModel()
-                    {
-                        Title = h.Title,
-                        Address = h.Address,
-                        ImageUrl = h.ImageUrl
-                    })
-            };
+            //var allHouses = new AllHousesQueryModel()
+            //{
+            //    Houses = this.data.Houses
+            //        .Where(h => h.Agent.UserId == this.User.Id())
+            //        .Select(h => new HouseDetailsViewModel()
+            //        {
+            //            Title = h.Title,
+            //            Address = h.Address,
+            //            ImageUrl = h.ImageUrl
+            //        })
+            //};
 
-            return View(allHouses);
+            return View(/*allHouses*/);
         }
 
         public IActionResult Details(int id)
