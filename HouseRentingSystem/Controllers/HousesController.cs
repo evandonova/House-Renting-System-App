@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc; 
 using Microsoft.AspNetCore.Authorization;
 using HouseRentingSystem.Data;
-using HouseRentingSystem.Models.Houses;
 using HouseRentingSystem.Data.Entities;
 using HouseRentingSystem.Infrastructure;
 using HouseRentingSystem.Models;
+using HouseRentingSystem.Models.Agents;
+using HouseRentingSystem.Models.Houses;
 
 namespace HouseRentingSystem.Controllers
 {
@@ -75,36 +76,77 @@ namespace HouseRentingSystem.Controllers
         [Authorize]
         public IActionResult Mine()
         {
-            //var allHouses = new AllHousesQueryModel()
-            //{
-            //    Houses = this.data.Houses
-            //        .Where(h => h.Agent.UserId == this.User.Id())
-            //        .Select(h => new HouseDetailsViewModel()
-            //        {
-            //            Title = h.Title,
-            //            Address = h.Address,
-            //            ImageUrl = h.ImageUrl
-            //        })
-            //};
+            List<HouseViewModel> myHouses = new();
 
-            return View(/*allHouses*/);
+            var isAgent = this.data.Agents.Any(a => a.UserId == this.User.Id());
+
+            if (isAgent)
+            {
+                var currentAgentId = this.data.Agents
+                    .First(a => a.UserId == this.User.Id())
+                    .Id;
+
+                myHouses = this.data
+                  .Houses
+                  .Where(h => h.AgentId == currentAgentId)
+                  .Select(h => new HouseViewModel()
+                  {
+                      Id = h.Id,
+                      Title = h.Title,
+                      Address = h.Address,
+                      ImageUrl = h.ImageUrl,
+                      PricePerMonth = h.PricePerMonth,
+                      IsRented = h.RenterId != null
+                  })
+                  .ToList();
+            }
+            else
+            {
+                myHouses = this.data
+                  .Houses
+                  .Where(h => h.RenterId == this.User.Id())
+                  .Select(h => new HouseViewModel()
+                  {
+                      Id = h.Id,
+                      Title = h.Title,
+                      Address = h.Address,
+                      ImageUrl = h.ImageUrl,
+                      PricePerMonth = h.PricePerMonth,
+                      IsRented = h.RenterId != null
+                  })
+                  .ToList();
+            }
+
+            return View(myHouses);
         }
 
         public IActionResult Details(int id)
         {
-            var house = this.data.Houses.Find(id);
-
-            if (house is null)
+            if (!this.data.Houses.Any(h => h.Id == id))
             {
                 return BadRequest();
             }
 
-            var houseModel = new HouseDetailsViewModel()
-            {
-                Title = house.Title,
-                Address = house.Address,
-                ImageUrl = house.ImageUrl
-            };
+            var houseModel = this.data
+                .Houses
+                .Where(h => h.Id == id)
+                .Select(h => new HouseDetailsViewModel()
+                {
+                    Id = h.Id,
+                    Title = h.Title,
+                    Address = h.Address,
+                    Description = h.Description,
+                    ImageUrl = h.ImageUrl,
+                    PricePerMonth = h.PricePerMonth,
+                    IsRented = h.RenterId != null,
+                    Category = h.Category.Name,
+                    Agent = new AgentViewModel()
+                    {
+                        PhoneNumber = h.Agent.PhoneNumber,
+                        Email = h.Agent.User.Email
+                    }
+                })
+                .FirstOrDefault();
 
             return View(houseModel);
         }
