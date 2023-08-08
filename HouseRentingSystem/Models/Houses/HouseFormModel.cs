@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HouseRentingSystem.Services.Houses.Models;
+using System.ComponentModel.DataAnnotations;
 
 using static HouseRentingSystem.Data.DataConstants.House;
 
@@ -31,7 +32,7 @@ namespace HouseRentingSystem.Models.Houses
         [Display(Name = "Category")]
         public int CategoryId { get; init; }
 
-        public IEnumerable<HouseCategoryViewModel> Categories { get; set; }
-            = new List<HouseCategoryViewModel>();
+        public IEnumerable<HouseCategoryServiceModel> Categories { get; set; }
+            = new List<HouseCategoryServiceModel>();
     }
 }

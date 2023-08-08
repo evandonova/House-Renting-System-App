@@ -1,41 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using HouseRentingSystem.Data;
-using HouseRentingSystem.Models.Home;
+using HouseRentingSystem.Services.Houses;
 
 namespace HouseRentingSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly HouseRentingDbContext data;
+        private readonly IHouseService houses;
 
-        public HomeController(HouseRentingDbContext data)
-            => this.data = data;
+        public HomeController(IHouseService houses)
+            => this.houses = houses;
 
         public IActionResult Index()
         {
-            var totalHouses = this.data.Houses.Count();
-
-            var totalRents = this.data.Houses
-                .Where(h => h.RenterId != null).Count();
-
-            var houses = this.data
-                .Houses
-                .OrderByDescending(c => c.Id)
-                .Select(c => new HouseIndexViewModel
-                {
-                    Id = c.Id,
-                    Title = c.Title,
-                    ImageUrl = c.ImageUrl
-                })
-                .Take(3)
-                .ToList();
-
-            return View(new IndexViewModel
-            {
-                TotalHouses = totalHouses,
-                TotalRents = totalRents,
-                Houses = houses
-            });
+            var houses = this.houses.LastThreeHouses();
+            return View(houses);
         }
 
         public IActionResult Error(int statusCode)

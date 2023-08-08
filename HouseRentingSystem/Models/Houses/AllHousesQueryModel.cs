@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HouseRentingSystem.Services.Houses.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HouseRentingSystem.Models.Houses
 {
@@ -19,6 +20,6 @@ namespace HouseRentingSystem.Models.Houses
 
         public IEnumerable<string> Categories { get; set; } = new List<string>();
 
-        public IEnumerable<HouseViewModel> Houses { get; set; } = new List<HouseViewModel>();
+        public IEnumerable<HouseServiceModel> Houses { get; set; } = new List<HouseServiceModel>();
     }
 }

@@ -1,8 +1,8 @@
-﻿@model IndexViewModel
+﻿@model IEnumerable<HouseIndexServiceModel>
 
 @{
     ViewData["Title"] = "Home Page";
-    var houses = Model.Houses.ToList();
+    var houses = Model.ToList();
 }
 
 @if (!houses.Any())
@@ -49,17 +49,4 @@
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
     </button>
-</div>
-
-<div class="mb-5"></div>
-
-<div class="jumbotron">
-    <div class="row">
-        <h2 class="col-md-6 text-center">
-            @Model.TotalHouses Houses
-        </h2>
-        <h2 class="col-md-6 text-center">
-            @Model.TotalRents Rents
-        </h2>
-    </div>
 </div>
