@@ -1,13 +1,13 @@
-﻿using HouseRentingSystem.Models.Agents;
-
-namespace HouseRentingSystem.Models.Houses
+﻿namespace HouseRentingSystem.Models.Houses
 {
-    public class HouseDetailsViewModel : HouseViewModel
+    public class HouseDetailsViewModel
     {
-        public string Description { get; init; } = null!;
+        public int Id { get; init; }
 
-        public string Category { get; init; } = null!;
+        public string Title { get; init; } = null!;
 
-        public AgentViewModel Agent { get; init; } = null!;
+        public string Address { get; init; } = null!;
+
+        public string ImageUrl { get; init; } = null!;
     }
 }
