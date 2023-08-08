@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using HouseRentingSystem.Data;
 using HouseRentingSystem.Infrastructure;
 using HouseRentingSystem.Models.Agents;
-using HouseRentingSystem.Data.Entities;
+using HouseRentingSystem.Services.Agents;
 
 namespace HouseRentingSystem.Controllers
 {
     public class AgentsController : Controller
     {
-        private readonly HouseRentingDbContext data;
+        private readonly IAgentService agents;
 
-        public AgentsController(HouseRentingDbContext data)
-            => this.data = data;
+        public AgentsController(IAgentService agents) 
+            => this.agents = agents;
 
         [Authorize]
         public IActionResult Become()
         {
-            if (this.data.Agents.Any(a => a.UserId == this.User.Id()))
+            if (this.agents.ExistsById(this.User.Id()!))
             {
                 return BadRequest();
             }
@@ -29,18 +28,20 @@ namespace HouseRentingSystem.Controllers
         [Authorize]
         public IActionResult Become(BecomeAgentFormModel model)
         {
-            if (this.data.Agents.Any(a => a.UserId == this.User.Id()))
+            var userId = this.User.Id()!;
+
+            if (this.agents.ExistsById(userId))
             {
                 return BadRequest();
             }
 
-            if (this.data.Agents.Any(a => a.PhoneNumber == model.PhoneNumber))
+            if (this.agents.UserWithPhoneNumberExists(model.PhoneNumber))
             {
                 ModelState.AddModelError(nameof(model.PhoneNumber),
-                    "Phone number already exists. Please enter another one.");
+                    "Phone number already exists. Enter another one.");
             }
 
-            if (this.data.Houses.Any(h => h.RenterId == this.User.Id()))
+            if (this.agents.UserHasRents(userId))
             {
                 ModelState.AddModelError("Error",
                     "You should have no rents to become an agent!");
@@ -51,14 +52,7 @@ namespace HouseRentingSystem.Controllers
                 return View(model);
             }
 
-            var agent = new Agent()
-            {
-                UserId = this.User.Id()!,
-                PhoneNumber = model.PhoneNumber
-            };
-
-            this.data.Agents.Add(agent);
-            this.data.SaveChanges();
+            this.agents.Create(userId, model.PhoneNumber);
 
             return RedirectToAction(nameof(HousesController.All), "Houses");
         }
