@@ -215,13 +215,13 @@ namespace HouseRentingSystem.Services.Houses
         }
 
         public bool IsRented(int id)
-          => this.data.Houses.First(h => h.Id == id).RenterId != null;
+          => this.data.Houses.First(h => h.Id == id).RenterId is not null;
 
         public bool IsRentedByUserWithId(int houseId, string userId)
         {
             var house = this.data.Houses.First(h => h.Id == houseId);
 
-            if (house == null)
+            if (house is null)
             {
                 return false;
             }
