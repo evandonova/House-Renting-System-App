@@ -4,6 +4,9 @@
     ViewBag.Title = "House Details";
 }
 
+@inject IHouseService houses
+@inject IAgentService agents
+
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
@@ -24,23 +27,26 @@
             <p>Category: <b>@Model.Category</b></p>
             <p><i>(@(Model.IsRented ? "Rented" : "Not Rented"))</i></p>
             <div class="form-inline">
-                @if (this.User.Identity.IsAuthenticated)
+                @if (this.User?.Identity?.IsAuthenticated ?? false)
                 {
-                    <a class="btn btn-warning" asp-controller="Houses" asp-action="Edit"
-                       asp-route-id="@Model.Id">Edit</a>
-                    <a class="ml-2 btn btn-danger" asp-controller="Houses" asp-action="Delete"
-                       asp-route-id="@Model.Id">Delete</a>
-                    @if (!Model.IsRented)
+                    @if (this.houses.HasAgentWithId(Model.Id, this.User.Id()!))
+                    {
+                        <a class="btn btn-warning" asp-controller="Houses" 
+                            asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                        <a class="ml-2 btn btn-danger" asp-controller="Houses" 
+                            asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                    }
+                    @if (!Model.IsRented && !this.agents.ExistsById(this.User.Id()!))
                     {
                         <form class="ml-2 mt-2" asp-controller="Houses"
                               asp-action="Rent" asp-route-id="@Model.Id" method="post">
                             <input class="btn btn-primary" type="submit" value="Rent" />
                         </form>
                     }
-                    else
+                    else if (this.houses.IsRentedByUserWithId(Model.Id, this.User.Id()!))
                     {
                         <form class="ml-2 mt-2" asp-controller="Houses" asp-action="Leave"
-                              asp-route-id="@Model.Id" method="post">
+                               asp-route-id="@Model.Id" method="post">
                             <input class="btn btn-primary" type="submit" value="Leave" />
                         </form>
                     }
