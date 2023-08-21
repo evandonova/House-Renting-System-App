@@ -5,6 +5,7 @@ using HouseRentingSystem.Services.Agents;
 using HouseRentingSystem.Services.Houses;
 using HouseRentingSystem.Services.Statistics;
 using Microsoft.AspNetCore.Mvc;
+using HouseRentingSystem.Data.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddDbContext<HouseRentingDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+builder.Services.AddDefaultIdentity<User>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = false;

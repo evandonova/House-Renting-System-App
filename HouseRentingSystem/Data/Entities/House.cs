@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 using static HouseRentingSystem.Data.DataConstants.House;
@@ -39,6 +38,6 @@ namespace HouseRentingSystem.Data.Entities
 
         public string? RenterId { get; set; }
 
-        public IdentityUser? Renter { get; set; }
+        public User? Renter { get; set; }
     }
 }

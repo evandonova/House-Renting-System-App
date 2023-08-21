@@ -16,7 +16,7 @@ namespace HouseRentingSystem.Data.Entities
         [Required]
         public string UserId { get; set; } = null!;
 
-        public IdentityUser User { get; init; } = null!;
+        public User User { get; init; } = null!;
 
         public IEnumerable<House> ManagedHouses { get; set; } = new List<House>();
     }
