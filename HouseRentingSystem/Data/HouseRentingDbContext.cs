@@ -3,13 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using HouseRentingSystem.Data.Entities;
 
+using static HouseRentingSystem.AdminConstants;
+
 namespace HouseRentingSystem.Data
 {
     public class HouseRentingDbContext : IdentityDbContext<User>
     {
         private User agentUser { get; set; } = null!;
         private User guestUser { get; set; } = null!;
+        private User adminUser { get; set; } = null!;
         private Agent agent { get; set; } = null!;
+        private Agent adminAgent { get; set; } = null!;
         private Category cottageCategory { get; set; } = null!;
         private Category singleCategory { get; set; } = null!;
         private Category duplexCategory { get; set; } = null!;
@@ -44,11 +48,14 @@ namespace HouseRentingSystem.Data
 
             SeedUsers();
             builder.Entity<User>()
-                    .HasData(this.agentUser, this.guestUser);
+                    .HasData(this.agentUser, 
+                    this.guestUser,
+                    this.adminUser);
 
             SeedAgent();
             builder.Entity<Agent>()
-                    .HasData(this.agent);
+                    .HasData(this.agent,
+                    this.adminAgent);
 
             SeedCategories();
             builder.Entity<Category>()
@@ -96,6 +103,20 @@ namespace HouseRentingSystem.Data
 
             this.guestUser.PasswordHash =
               hasher.HashPassword(this.guestUser, "guest123");
+
+            this.adminUser = new User()
+            {
+                Id = "787345d0-d1a4-416f-8f8c-e6d40b96c0b3",
+                UserName = AdminEmail,
+                NormalizedUserName = AdminEmail,
+                Email = AdminEmail,
+                NormalizedEmail = AdminEmail,
+                FirstName = "Great",
+                LastName = "Admin"
+            };
+
+            this.adminUser.PasswordHash =
+              hasher.HashPassword(this.adminUser, "admin123");
         }
 
         private void SeedAgent()
@@ -105,6 +126,13 @@ namespace HouseRentingSystem.Data
                 Id = Guid.Parse("44a41a1c-943b-47e2-80e6-47463b6f139b"),
                 PhoneNumber = "+359888888888",
                 UserId = this.agentUser.Id
+            };
+
+            this.adminAgent = new Agent()
+            {
+                Id = Guid.Parse("2d0b01e8-07fc-4069-80c3-bae95b27ff53"),
+                PhoneNumber = "+359123456789",
+                UserId = this.adminUser.Id
             };
         }
 
