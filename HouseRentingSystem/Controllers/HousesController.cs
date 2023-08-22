@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc; 
 using Microsoft.AspNetCore.Authorization;
-using HouseRentingSystem.Data;
 using HouseRentingSystem.Infrastructure;
 using HouseRentingSystem.Models.Houses;
 using HouseRentingSystem.Services.Houses;
@@ -131,7 +130,8 @@ namespace HouseRentingSystem.Controllers
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!))
+            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+                && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
@@ -163,7 +163,8 @@ namespace HouseRentingSystem.Controllers
                 return this.View();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!))
+            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+                && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
@@ -196,7 +197,8 @@ namespace HouseRentingSystem.Controllers
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!))
+            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+                && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
@@ -222,7 +224,8 @@ namespace HouseRentingSystem.Controllers
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(model.Id, this.User.Id()!))
+            if (!this.houses.HasAgentWithId(model.Id, this.User.Id()!) 
+                && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
@@ -241,7 +244,8 @@ namespace HouseRentingSystem.Controllers
                 return BadRequest();
             }
 
-            if (this.agents.ExistsById(this.User.Id()!))
+            if (this.agents.ExistsById(this.User.Id()!) 
+                && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
