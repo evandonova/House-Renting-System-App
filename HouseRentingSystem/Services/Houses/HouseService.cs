@@ -1,6 +1,7 @@
 ﻿using HouseRentingSystem.Data;
 using HouseRentingSystem.Data.Entities;
 using HouseRentingSystem.Models;
+using HouseRentingSystem.Services.Users;
 using HouseRentingSystem.Services.Agents.Models;
 using HouseRentingSystem.Services.Houses.Models;
 
@@ -9,9 +10,13 @@ namespace HouseRentingSystem.Services.Houses
     public class HouseService : IHouseService
     {
         private readonly HouseRentingDbContext data;
+        private readonly IUserService users;
 
-        public HouseService(HouseRentingDbContext data) 
-            => this.data = data;
+        public HouseService(HouseRentingDbContext data, IUserService users)
+        {
+            this.data = data;
+            this.users = users;
+        }
 
         public HouseQueryServiceModel All(string? category = null,
             string? searchTerm = null,
@@ -114,6 +119,7 @@ namespace HouseRentingSystem.Services.Houses
                     Category = h.Category.Name,
                     Agent = new AgentServiceModel()
                     {
+                        FullName = this.users.UserFullName(h.Agent.UserId),
                         PhoneNumber = h.Agent.PhoneNumber,
                         Email = h.Agent.User.Email
                     }
