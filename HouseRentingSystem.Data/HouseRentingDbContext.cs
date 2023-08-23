@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using HouseRentingSystem.Data.Entities;
 
-using static HouseRentingSystem.AdminConstants;
+using static HouseRentingSystem.Data.Constants;
 
 namespace HouseRentingSystem.Data
 {
