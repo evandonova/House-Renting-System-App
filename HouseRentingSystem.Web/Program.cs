@@ -8,6 +8,7 @@ using HouseRentingSystem.Services.Agents;
 using HouseRentingSystem.Services.Houses;
 using HouseRentingSystem.Services.Statistics;
 using HouseRentingSystem.Web.Infrastructure;
+using HouseRentingSystem.Web.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,10 @@ builder.Services.AddDefaultIdentity<User>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HouseRentingDbContext>();
+
+builder.Services.AddAutoMapper(
+    typeof(IHouseService).Assembly,
+    typeof(HomeController).Assembly);
 
 builder.Services.AddControllersWithViews(options =>
 {
