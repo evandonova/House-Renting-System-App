@@ -7,6 +7,8 @@ using HouseRentingSystem.Services.Houses;
 using HouseRentingSystem.Services.Agents;
 using HouseRentingSystem.Services.Houses.Models;
 
+using static HouseRentingSystem.Web.Areas.Admin.AdminConstants;
+
 namespace HouseRentingSystem.Web.Controllers
 {
     public class HousesController : Controller
@@ -43,6 +45,11 @@ namespace HouseRentingSystem.Web.Controllers
         [Authorize]
         public IActionResult Mine()
         {
+            if (this.User.IsInRole(AdminRoleName))
+            {
+                return RedirectToAction("Mine", "Houses", new { area = "Admin" });
+            }
+
             IEnumerable<HouseServiceModel> myHouses;
 
             var userId = this.User.Id()!;

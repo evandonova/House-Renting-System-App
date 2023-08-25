@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using HouseRentingSystem.Data.Entities;
 
-using static HouseRentingSystem.Web.AdminConstants;
+using static HouseRentingSystem.Web.Areas.Admin.AdminConstants;
 
 namespace HouseRentingSystem.Web.Infrastructure
 {

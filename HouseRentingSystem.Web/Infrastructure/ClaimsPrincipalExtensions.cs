@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-using static HouseRentingSystem.Web.AdminConstants;
+using static HouseRentingSystem.Web.Areas.Admin.AdminConstants;
 
 namespace HouseRentingSystem.Web.Infrastructure
 {

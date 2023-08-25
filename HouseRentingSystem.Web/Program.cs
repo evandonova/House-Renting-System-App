@@ -9,6 +9,7 @@ using HouseRentingSystem.Services.Houses;
 using HouseRentingSystem.Services.Statistics;
 using HouseRentingSystem.Web.Infrastructure;
 using HouseRentingSystem.Web.Controllers;
+using HouseRentingSystem.Services.Rents;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,7 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAgentService, AgentService>();
 builder.Services.AddTransient<IHouseService, HouseService>();
+builder.Services.AddTransient<IRentService, RentService>();
 builder.Services.AddTransient<IStatisticsService, StatisticsService>();
 
 var app = builder.Build();
@@ -70,6 +72,10 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapControllerRoute(
+        name: "Areas",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
     endpoints.MapControllerRoute(
             name: "House Details",
             pattern: "/Houses/Details/{id}/{information}",
