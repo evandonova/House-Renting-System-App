@@ -35,6 +35,8 @@ builder.Services.AddAutoMapper(
     typeof(IHouseService).Assembly,
     typeof(HomeController).Assembly);
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();

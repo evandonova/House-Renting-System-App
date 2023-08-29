@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc; 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 using HouseRentingSystem.Web.Infrastructure;
 using HouseRentingSystem.Web.Models.Houses;
 using HouseRentingSystem.Services.Houses;
@@ -16,12 +17,15 @@ namespace HouseRentingSystem.Web.Controllers
         private readonly IHouseService houses;
         private readonly IAgentService agents;
         private readonly IMapper mapper;
+        private readonly IMemoryCache cache;
 
-        public HousesController(IHouseService houses, IAgentService agents, IMapper mapper)
+        public HousesController(IHouseService houses, IAgentService agents, 
+            IMapper mapper, IMemoryCache cache)
         {
             this.houses = houses;
             this.agents = agents;
             this.mapper = mapper;
+            this.cache = cache;
         }
 
         public IActionResult All([FromQuery] AllHousesQueryModel query)
@@ -255,6 +259,8 @@ namespace HouseRentingSystem.Web.Controllers
 
             this.houses.Rent(id, this.User.Id()!);
 
+            this.cache.Remove(RentsCacheKey);
+
             return RedirectToAction(nameof(Mine));
         }
 
@@ -274,6 +280,8 @@ namespace HouseRentingSystem.Web.Controllers
             }
 
             this.houses.Leave(id);
+
+            this.cache.Remove(RentsCacheKey);
 
             return RedirectToAction(nameof(Mine));
         }
