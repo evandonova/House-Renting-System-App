@@ -10,13 +10,13 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light 
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light
             bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" 
-                    asp-action="Index">House Renting Worldwide</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-                    data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <a class="navbar-brand" asp-area="" asp-controller="Home"
+                   asp-action="Index">House Renting Worldwide</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -52,6 +52,14 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["message"] is not null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["message"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

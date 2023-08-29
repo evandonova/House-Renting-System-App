@@ -132,6 +132,8 @@ namespace HouseRentingSystem.Web.Controllers
                 model.Description, model.ImageUrl, model.PricePerMonth,
                 model.CategoryId, agentId);
 
+            TempData["message"] = "You have successfully added a house!";
+
             return RedirectToAction(nameof(Details),
                 new { id = newHouseId, information = model.GetInformation() });
         }
@@ -192,6 +194,8 @@ namespace HouseRentingSystem.Web.Controllers
             this.houses.Edit(id, model.Title, model.Address, model.Description,
                 model.ImageUrl, model.PricePerMonth, model.CategoryId);
 
+            TempData["message"] = "You have successfully edited a house!";
+
             return RedirectToAction(nameof(Details), 
                 new { id = id, information = model.GetInformation() });
         }
@@ -234,6 +238,8 @@ namespace HouseRentingSystem.Web.Controllers
 
             this.houses.Delete(model.Id);
 
+            TempData["message"] = "You have successfully deleted a house!";
+
             return RedirectToAction(nameof(All));
         }
 
@@ -261,6 +267,8 @@ namespace HouseRentingSystem.Web.Controllers
 
             this.cache.Remove(RentsCacheKey);
 
+            TempData["message"] = "You have successfully rented a house!";
+
             return RedirectToAction(nameof(Mine));
         }
 
@@ -282,6 +290,8 @@ namespace HouseRentingSystem.Web.Controllers
             this.houses.Leave(id);
 
             this.cache.Remove(RentsCacheKey);
+
+            TempData["message"] = "You have successfully left a house!";
 
             return RedirectToAction(nameof(Mine));
         }
