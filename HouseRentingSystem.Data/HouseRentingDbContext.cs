@@ -9,6 +9,7 @@ namespace HouseRentingSystem.Data
 {
     public class HouseRentingDbContext : IdentityDbContext<User>
     {
+        private bool seedDb;
         private User agentUser { get; set; } = null!;
         private User guestUser { get; set; } = null!;
         private User adminUser { get; set; } = null!;
@@ -21,9 +22,16 @@ namespace HouseRentingSystem.Data
         private House secondHouse { get; set; } = null!;
         private House thirdHouse { get; set; } = null!;
 
-        public HouseRentingDbContext(DbContextOptions<HouseRentingDbContext> options)
+        public HouseRentingDbContext
+            (DbContextOptions<HouseRentingDbContext> options, bool seedDb)
             : base(options)
         {
+            if (!this.Database.IsRelational())
+            {
+                this.Database.EnsureCreated();
+            }
+
+            this.seedDb = seedDb;
         }
 
         public DbSet<House> Houses { get; init; } = null!;
@@ -46,28 +54,31 @@ namespace HouseRentingSystem.Data
                .HasForeignKey(h => h.AgentId)
                .OnDelete(DeleteBehavior.Restrict);
 
-            SeedUsers();
-            builder.Entity<User>()
-                    .HasData(this.agentUser, 
-                    this.guestUser,
-                    this.adminUser);
+            if(this.seedDb)
+            {
+                SeedUsers();
+                builder.Entity<User>()
+                        .HasData(this.agentUser,
+                        this.guestUser,
+                        this.adminUser);
 
-            SeedAgent();
-            builder.Entity<Agent>()
-                    .HasData(this.agent,
-                    this.adminAgent);
+                SeedAgent();
+                builder.Entity<Agent>()
+                        .HasData(this.agent,
+                        this.adminAgent);
 
-            SeedCategories();
-            builder.Entity<Category>()
-                .HasData(this.cottageCategory,
-                        this.singleCategory,
-                        this.duplexCategory);
+                SeedCategories();
+                builder.Entity<Category>()
+                    .HasData(this.cottageCategory,
+                            this.singleCategory,
+                            this.duplexCategory);
 
-            SeedHouses();
-            builder.Entity<House>()
-                .HasData(this.firstHouse,
-                        this.secondHouse,
-                        this.thirdHouse);
+                SeedHouses();
+                builder.Entity<House>()
+                    .HasData(this.firstHouse,
+                            this.secondHouse,
+                            this.thirdHouse);
+            }
 
             base.OnModelCreating(builder);
         }
