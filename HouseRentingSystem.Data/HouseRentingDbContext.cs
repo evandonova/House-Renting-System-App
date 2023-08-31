@@ -9,7 +9,7 @@ namespace HouseRentingSystem.Data
 {
     public class HouseRentingDbContext : IdentityDbContext<User>
     {
-        private bool seedDb;
+        private bool seedDb = true;
         private User agentUser { get; set; } = null!;
         private User guestUser { get; set; } = null!;
         private User adminUser { get; set; } = null!;
@@ -23,12 +23,16 @@ namespace HouseRentingSystem.Data
         private House thirdHouse { get; set; } = null!;
 
         public HouseRentingDbContext
-            (DbContextOptions<HouseRentingDbContext> options, bool seedDb)
+            (DbContextOptions<HouseRentingDbContext> options, bool seedDb = true)
             : base(options)
         {
             if (!this.Database.IsRelational())
             {
                 this.Database.EnsureCreated();
+            }
+            else
+            {
+                this.Database.Migrate();
             }
 
             this.seedDb = seedDb;
@@ -91,9 +95,9 @@ namespace HouseRentingSystem.Data
             {
                 Id = "dea12856-c198-4129-b3f3-b893d8395082",
                 UserName = "agent@mail.com",
-                NormalizedUserName = "agent@mail.com",
+                NormalizedUserName = "AGENT@MAIL.COM",
                 Email = "agent@mail.com",
-                NormalizedEmail = "agent@mail.com",
+                NormalizedEmail = "AGENT@MAIL.COM",
                 FirstName = "Linda",
                 LastName = "Michaels"
             };
@@ -105,9 +109,9 @@ namespace HouseRentingSystem.Data
             {
                 Id = "6d5800ce-d726-4fc8-83d9-d6b3ac1f591e",
                 UserName = "guest@mail.com",
-                NormalizedUserName = "guest@mail.com",
+                NormalizedUserName = "GUEST@MAIL.COM",
                 Email = "guest@mail.com",
-                NormalizedEmail = "guest@mail.com",
+                NormalizedEmail = "GUEST@MAIL.COM",
                 FirstName = "Teodor",
                 LastName = "Lesly"
             };
@@ -119,9 +123,9 @@ namespace HouseRentingSystem.Data
             {
                 Id = "787345d0-d1a4-416f-8f8c-e6d40b96c0b3",
                 UserName = AdminEmail,
-                NormalizedUserName = AdminEmail,
+                NormalizedUserName = AdminEmail.ToUpper(),
                 Email = AdminEmail,
-                NormalizedEmail = AdminEmail,
+                NormalizedEmail = AdminEmail.ToUpper(),
                 FirstName = "Great",
                 LastName = "Admin"
             };
