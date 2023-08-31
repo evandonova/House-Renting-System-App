@@ -12,14 +12,14 @@ namespace HouseRentingSystem.Web.Controllers
         public HomeController(IHouseService houses)
             => this.houses = houses;
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (this.User.IsInRole(AdminRoleName))
             {
                 return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
 
-            var houses = this.houses.LastThreeHouses();
+            var houses = await this.houses.LastThreeHousesAsync();
             return View(houses);
         }
 

@@ -18,15 +18,15 @@ namespace HouseRentingSystem.Web.Areas.Admin.Controllers
             this.agents = agents;
         }
 
-        public IActionResult Mine()
+        public async Task<IActionResult> Mine()
         {
             var myHouses = new MyHousesViewModel();
 
             var adminUserId = this.User.Id()!;
-            myHouses.RentedHouses = this.houses.AllHousesByUserId(adminUserId);
+            myHouses.RentedHouses = await this.houses.AllHousesByUserIdAsync(adminUserId);
 
-            var adminAgentId = this.agents.GetAgentId(adminUserId);
-            myHouses.AddedHouses = this.houses.AllHousesByAgentId(adminAgentId);
+            var adminAgentId = await this.agents.GetAgentIdAsync(adminUserId);
+            myHouses.AddedHouses = await this.houses.AllHousesByAgentIdAsync(adminAgentId);
 
             return View(myHouses);
         }

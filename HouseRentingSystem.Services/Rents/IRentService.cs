@@ -4,6 +4,6 @@ namespace HouseRentingSystem.Services.Rents
 {
     public interface IRentService
     {
-        IEnumerable<RentServiceModel> All();
+        Task<IEnumerable<RentServiceModel>> AllAsync();
     }
 }

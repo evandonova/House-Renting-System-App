@@ -14,7 +14,7 @@ namespace HouseRentingSystem.Web.Controllers.Api
             => this.statistics = statistics;
 
         [HttpGet]
-        public StatisticsServiceModel GetStatistics()
-            => this.statistics.Total();
+        public async Task<StatisticsServiceModel> GetStatistics()
+            => await this.statistics.TotalAsync();
     }
 }

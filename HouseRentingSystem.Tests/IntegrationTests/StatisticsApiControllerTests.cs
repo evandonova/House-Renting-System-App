@@ -13,12 +13,12 @@ namespace HouseRentingSystem.Tests.IntegrationTests
                 new StatisticsApiController(StatisticsServiceMock.Instance);
 
         [Test]
-        public void GetStatistics_ShouldReturnCorrectCounts()
+        public async Task GetStatistics_ShouldReturnCorrectCounts()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.statisticsController.GetStatistics();
+            var result = await this.statisticsController.GetStatistics();
 
             // Assert the returned result counts are correct
             Assert.NotNull(result);

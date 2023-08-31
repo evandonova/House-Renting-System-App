@@ -17,9 +17,9 @@ namespace HouseRentingSystem.Services.Users
             this.mapper = mapper;
         }
 
-        public string? UserFullName(string userId)
+        public async Task<string?> UserFullNameAsync(string userId)
         {
-            var user = this.data.Users.First(u => u.Id == userId);
+            var user = await this.data.Users.FirstAsync(u => u.Id == userId);
 
             if (user is null || string.IsNullOrEmpty(user.FirstName)
                 || string.IsNullOrEmpty(user.LastName))
@@ -30,26 +30,26 @@ namespace HouseRentingSystem.Services.Users
             return user.FirstName + " " + user.LastName;
         }
 
-        public bool UserHasRents(string userId)
-            => this.data.Houses.Any(h => h.RenterId == userId);
+        public async Task<bool> UserHasRentsAsync(string userId)
+            => await this.data.Houses.AnyAsync(h => h.RenterId == userId);
 
-        public IEnumerable<UserServiceModel> All()
+        public async Task<IEnumerable<UserServiceModel>> AllAsync()
         {
             var allUsers = new List<UserServiceModel>();
 
-            var agents = this.data
+            var agents = await this.data
                 .Agents
                 .Include(ag => ag.User)
                 .ProjectTo<UserServiceModel>(this.mapper.ConfigurationProvider)
-                .ToList();
+                .ToListAsync();
 
             allUsers.AddRange(agents);
 
-            var users = this.data
+            var users = await this.data
                 .Users
                 .Where(u => !this.data.Agents.Any(ag => ag.UserId == u.Id))
                 .ProjectTo<UserServiceModel>(this.mapper.ConfigurationProvider)
-                .ToList();
+                .ToListAsync();
 
             allUsers.AddRange(users);
 

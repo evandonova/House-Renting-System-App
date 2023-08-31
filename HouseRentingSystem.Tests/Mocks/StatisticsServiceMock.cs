@@ -13,12 +13,12 @@ namespace HouseRentingSystem.Tests.Mocks
                 var statisticsServiceMock = new Mock<IStatisticsService>();
 
                 statisticsServiceMock
-                    .Setup(s => s.Total())
-                    .Returns(new StatisticsServiceModel() 
-                    { 
+                    .Setup(s => s.TotalAsync())
+                    .Returns(Task.FromResult(new StatisticsServiceModel()
+                    {
                         TotalHouses = 10,
                         TotalRents = 6
-                    });
+                    }));
 
                 return statisticsServiceMock.Object;
             }

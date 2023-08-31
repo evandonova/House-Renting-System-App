@@ -17,15 +17,15 @@ namespace HouseRentingSystem.Services.Rents
             this.mapper = mapper;
         }
 
-        public IEnumerable<RentServiceModel> All()
+        public async Task<IEnumerable<RentServiceModel>> AllAsync()
         {
-            return this.data
+            return await this.data
                 .Houses
                 .Include(h => h.Agent.User)
                 .Include(h => h.Renter)
                 .Where(h => h.RenterId != null)
                 .ProjectTo<RentServiceModel>(this.mapper.ConfigurationProvider)
-                .ToList();
+                .ToListAsync();
         }
     }
 }

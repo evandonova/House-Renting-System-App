@@ -9,7 +9,7 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        @if (!this.agents.ExistsById(this.User.Id()!))
+        @if (!await this.agents.ExistsByIdAsync(this.User.Id()!))
         {
             <li class="nav-item">
                 <a class="nav-link text-dark" asp-area="" asp-controller="Agents" 
@@ -17,7 +17,7 @@
             </li>
         }
         <li class="nav-item">
-            @if(users.UserFullName(this.User.Id()!) is var fullname && fullname is not null)
+            @if(await users.UserFullNameAsync(this.User.Id()!) is var fullname && fullname is not null)
             {
                 <a class="nav-link text-dark">Hello, @fullname!</a>
             }

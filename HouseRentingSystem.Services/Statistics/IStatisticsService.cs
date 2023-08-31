@@ -4,6 +4,6 @@ namespace HouseRentingSystem.Services.Statistics
 {
     public interface IStatisticsService
     {
-        StatisticsServiceModel Total();
+        Task<StatisticsServiceModel> TotalAsync();
     }
 }

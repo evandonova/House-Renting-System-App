@@ -22,7 +22,7 @@ namespace HouseRentingSystem.Services.Houses
             this.mapper = mapper;
         }
 
-        public HouseQueryServiceModel All(string? category = null,
+        public async Task<HouseQueryServiceModel> AllAsync(string? category = null,
             string? searchTerm = null,
             HouseSorting sorting = HouseSorting.Newest,
             int currentPage = 1,
@@ -54,13 +54,13 @@ namespace HouseRentingSystem.Services.Houses
                 _ => housesQuery.OrderByDescending(h => h.Id)
             };
 
-            var houses = housesQuery
+            var houses = await housesQuery
                 .Skip((currentPage - 1) * housesPerPage)
                 .Take(housesPerPage)
                 .ProjectTo<HouseServiceModel>(this.mapper.ConfigurationProvider)
-                .ToList();
+                .ToListAsync();
 
-            var totalHouses = housesQuery.Count();
+            var totalHouses = await housesQuery.CountAsync();
 
             return new HouseQueryServiceModel()
             {
@@ -69,67 +69,67 @@ namespace HouseRentingSystem.Services.Houses
             };
         }
 
-        public IEnumerable<string> AllCategoriesNames()
-          => this.data
+        public async Task<IEnumerable<string>> AllCategoriesNamesAsync()
+          => await this.data
                .Categories
                   .Select(c => c.Name)
                   .Distinct()
-                  .ToList();
+                  .ToListAsync();
 
-        public IEnumerable<HouseServiceModel> AllHousesByAgentId(string agentId)
+        public async Task<IEnumerable<HouseServiceModel>> AllHousesByAgentIdAsync(string agentId)
         {
-            var houses = this.data
+            var houses = await this.data
                   .Houses
                   .Where(h => h.AgentId.ToString() == agentId)
                   .ProjectTo<HouseServiceModel>(this.mapper.ConfigurationProvider)
-                  .ToList();
+                  .ToListAsync();
 
             return houses;
         }
 
-        public IEnumerable<HouseServiceModel> AllHousesByUserId(string userId)
+        public async Task<IEnumerable<HouseServiceModel>> AllHousesByUserIdAsync(string userId)
         {
-            var houses = this.data
+            var houses = await this.data
                   .Houses
                   .Where(h => h.RenterId == userId)
                   .ProjectTo<HouseServiceModel>(this.mapper.ConfigurationProvider)
-                  .ToList();
+                  .ToListAsync();
 
             return houses;
         }
 
-        public bool Exists(int id)
-           => this.data.Houses.Any(h => h.Id == id);
+        public async Task<bool> ExistsAsync(int id)
+           => await this.data.Houses.AnyAsync(h => h.Id == id);
 
-        public HouseDetailsServiceModel HouseDetailsById(int id)
+        public async Task<HouseDetailsServiceModel> HouseDetailsByIdAsync(int id)
         {
-            var dbHouse = this.data
+            var dbHouse = await this.data
                .Houses
                .Include(h => h.Category)
                .Include(h => h.Agent.User)
                .Where(h => h.Id == id)
-               .First();
+               .FirstAsync();
 
             var house = this.mapper.Map<HouseDetailsServiceModel>(dbHouse);
 
             var agent = this.mapper.Map<AgentServiceModel>(dbHouse.Agent);
-            agent.FullName = this.users.UserFullName(dbHouse.Agent.UserId);
+            agent.FullName = await this.users.UserFullNameAsync(dbHouse.Agent.UserId);
 
             house.Agent = agent;
 
             return house;
         }
 
-        public IEnumerable<HouseCategoryServiceModel> AllCategories()
-            => this.data
+        public async Task<IEnumerable<HouseCategoryServiceModel>> AllCategoriesAsync()
+            => await this.data
                    .Categories
                    .ProjectTo<HouseCategoryServiceModel>(this.mapper.ConfigurationProvider)
-                   .ToList();
+                   .ToListAsync();
 
-        public bool CategoryExists(int categoryId)
-            => this.data.Categories.Any(c => c.Id == categoryId);
+        public async Task<bool> CategoryExistsAsync(int categoryId)
+            => await this.data.Categories.AnyAsync(c => c.Id == categoryId);
 
-        public int Create(string title, string address, string description,
+        public async Task<int> CreateAsync(string title, string address, string description,
             string imageUrl, decimal price, int categoryId, string agentId)
         {
             var house = new House
@@ -143,18 +143,18 @@ namespace HouseRentingSystem.Services.Houses
                 AgentId = Guid.Parse(agentId)
             };
 
-            this.data.Houses.Add(house);
-            this.data.SaveChanges();
+            await this.data.Houses.AddAsync(house);
+            await this.data.SaveChangesAsync();
 
             return house.Id;
         }
 
-        public bool HasAgentWithId(int houseId, string currentUserId)
+        public async Task<bool> HasAgentWithIdAsync(int houseId, string currentUserId)
         {
-            var house = this.data.Houses.First(h => h.Id == houseId);
-            var agent = this.data.Agents.First(a => a.Id == house.AgentId);
+            var house = await this.data.Houses.FirstAsync(h => h.Id == houseId);
+            var agent = await this.data.Agents.FirstAsync(a => a.Id == house.AgentId);
 
-            if (agent == null)
+            if (agent is null)
             {
                 return false;
             }
@@ -167,10 +167,10 @@ namespace HouseRentingSystem.Services.Houses
             return true;
         }
 
-        public int GetHouseCategoryId(int houseId)
-           => this.data.Houses.First(h => h.Id == houseId).CategoryId;
+        public async Task<int> GetHouseCategoryIdAsync(int houseId)
+           => (await this.data.Houses.FirstAsync(h => h.Id == houseId)).CategoryId;
 
-        public void Edit(int houseId, string title, string address, string description,
+        public async Task EditAsync(int houseId, string title, string address, string description,
             string imageUrl, decimal price, int categoryId)
         {
             var house = this.data.Houses.First(h => h.Id == houseId);
@@ -182,23 +182,23 @@ namespace HouseRentingSystem.Services.Houses
             house.PricePerMonth = price;
             house.CategoryId = categoryId;
 
-            this.data.SaveChanges();
+            await this.data.SaveChangesAsync();
         }
 
-        public void Delete(int houseId)
+        public async Task DeleteAsync(int houseId)
         {
-            var house = this.data.Houses.First(h => h.Id == houseId);
+            var house = await this.data.Houses.FirstAsync(h => h.Id == houseId);
 
             this.data.Remove(house);
-            this.data.SaveChanges();
+            await this.data.SaveChangesAsync();
         }
 
-        public bool IsRented(int id)
-          => this.data.Houses.First(h => h.Id == id).RenterId is not null;
+        public async Task<bool> IsRentedAsync(int id)
+          => (await this.data.Houses.FirstAsync(h => h.Id == id)).RenterId is not null;
 
-        public bool IsRentedByUserWithId(int houseId, string userId)
+        public async Task<bool> IsRentedByUserWithIdAsync(int houseId, string userId)
         {
-            var house = this.data.Houses.First(h => h.Id == houseId);
+            var house = await this.data.Houses.FirstAsync(h => h.Id == houseId);
 
             if (house is null)
             {
@@ -213,27 +213,28 @@ namespace HouseRentingSystem.Services.Houses
             return true;
         }
 
-        public void Rent(int houseId, string userId)
+        public async Task RentAsync(int houseId, string userId)
         {
-            var house = this.data.Houses.First(h => h.Id == houseId);
+            var house = await this.data.Houses.FirstAsync(h => h.Id == houseId);
 
             house.RenterId = userId;
-            this.data.SaveChanges();
+            await this.data.SaveChangesAsync();
         }
 
-        public void Leave(int houseId)
+        public async Task LeaveAsync(int houseId)
         {
-            var house = this.data.Houses.First(h => h.Id == houseId);
+            var house = await this.data.Houses.FirstAsync(h => h.Id == houseId);
 
             house.RenterId = null;
-            this.data.SaveChanges();
+            await this.data.SaveChangesAsync();
         }
 
-        public IEnumerable<HouseIndexServiceModel> LastThreeHouses()
-            => this.data
+        public async Task<IEnumerable<HouseIndexServiceModel>> LastThreeHousesAsync()
+            => await this.data
                 .Houses
                 .OrderByDescending(c => c.Id)
                 .ProjectTo<HouseIndexServiceModel>(this.mapper.ConfigurationProvider)
-                .Take(3);
+                .Take(3)
+                .ToListAsync();
     }
 }

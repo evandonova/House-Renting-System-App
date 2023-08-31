@@ -9,7 +9,7 @@ namespace HouseRentingSystem.Data
 {
     public class HouseRentingDbContext : IdentityDbContext<User>
     {
-        private bool seedDb = true;
+        private bool seedDb;
         private User agentUser { get; set; } = null!;
         private User guestUser { get; set; } = null!;
         private User adminUser { get; set; } = null!;

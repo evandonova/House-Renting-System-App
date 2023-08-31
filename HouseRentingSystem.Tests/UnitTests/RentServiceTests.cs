@@ -12,12 +12,12 @@ namespace HouseRentingSystem.Tests.UnitTests
             => this.rentService = new RentService(this.data, this.mapper);
 
         [Test]
-        public void All_ShouldReturnCorrectData()
+        public async Task All_ShouldReturnCorrectData()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.rentService.All();
+            var result = await this.rentService.AllAsync();
 
             // Assert the result is not null
             Assert.IsNotNull(result);

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using HouseRentingSystem.Data;
 using HouseRentingSystem.Services.Statistics.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HouseRentingSystem.Services.Statistics
 {
@@ -11,11 +12,11 @@ namespace HouseRentingSystem.Services.Statistics
         public StatisticsService(HouseRentingDbContext data)
             => this.data = data;
 
-        public StatisticsServiceModel Total()
+        public async Task<StatisticsServiceModel> TotalAsync()
         {
-            var totalHouses = this.data.Houses.Count();
-            var totalRents = this.data.Houses
-                .Where(h => h.RenterId != null).Count();
+            var totalHouses = await this.data.Houses.CountAsync();
+            var totalRents = await this.data.Houses
+                .Where(h => h.RenterId != null).CountAsync();
 
             return new StatisticsServiceModel
             {

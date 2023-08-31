@@ -4,10 +4,10 @@ namespace HouseRentingSystem.Services.Users
 {
     public interface IUserService
     {
-        string? UserFullName(string userId);
+        Task<string?> UserFullNameAsync(string userId);
 
-        bool UserHasRents(string userId);
+        Task<bool> UserHasRentsAsync(string userId);
 
-        IEnumerable<UserServiceModel> All();
+        Task<IEnumerable<UserServiceModel>> AllAsync();
     }
 }

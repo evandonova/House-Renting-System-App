@@ -1,5 +1,6 @@
 ﻿using HouseRentingSystem.Data;
 using HouseRentingSystem.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HouseRentingSystem.Services.Agents
 {
@@ -10,18 +11,18 @@ namespace HouseRentingSystem.Services.Agents
         public AgentService(HouseRentingDbContext data)
             => this.data = data;
 
-        public string GetAgentId(string userId)
-            => this.data.Agents
-                    .First(a => a.UserId == userId)
+        public async Task<string> GetAgentIdAsync(string userId)
+            => (await this.data.Agents
+                    .FirstAsync(a => a.UserId == userId))
                     .Id.ToString();
 
-        public bool ExistsById(string userId)
-            => this.data.Agents.Any(a => a.UserId == userId);
+        public async Task<bool> ExistsByIdAsync(string userId)
+            => await this.data.Agents.AnyAsync(a => a.UserId == userId);
 
-        public bool AgentWithPhoneNumberExists(string phoneNumber)
-            => this.data.Agents.Any(a => a.PhoneNumber == phoneNumber);
+        public async Task<bool> AgentWithPhoneNumberExistsAsync(string phoneNumber)
+            => await this.data.Agents.AnyAsync(a => a.PhoneNumber == phoneNumber);
 
-        public void Create(string userId, string phoneNumber)
+        public async Task CreateAsync(string userId, string phoneNumber)
         {
             var agent = new Agent()
             {
@@ -29,8 +30,8 @@ namespace HouseRentingSystem.Services.Agents
                 PhoneNumber = phoneNumber
             };
 
-            this.data.Agents.Add(agent);
-            this.data.SaveChanges();
+            await this.data.Agents.AddAsync(agent);
+            await this.data.SaveChangesAsync();
         }
     }
 }

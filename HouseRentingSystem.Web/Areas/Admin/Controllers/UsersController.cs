@@ -19,14 +19,14 @@ namespace HouseRentingSystem.Web.Areas.Admin.Controllers
         }
 
         [Route("Users/All")]
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
             var users = this.cache
                 .Get<IEnumerable<UserServiceModel>>(UsersCacheKey);
 
             if (users is null)
             {
-                users = this.users.All();
+                users = await this.users.AllAsync();
 
                 var cacheOptions = new MemoryCacheEntryOptions()
                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));

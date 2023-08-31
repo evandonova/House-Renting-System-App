@@ -12,24 +12,24 @@ namespace HouseRentingSystem.Tests.UnitTests
             => this.userService = new UserService(this.data, this.mapper);
 
         [Test]
-        public void UserHasRents_ShouldReturnTrue_WithValidData()
+        public async Task UserHasRents_ShouldReturnTrue_WithValidData()
         {
             // Arrange
 
             // Act: invoke the service method with valid renter id
-            var result = this.userService.UserHasRents(this.Renter.Id);
+            var result = await this.userService.UserHasRentsAsync(this.Renter.Id);
 
             // Assert the retunred result is true
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void UserFullName_ShouldReturnCorrectResult()
+        public async Task UserFullName_ShouldReturnCorrectResult()
         {
             // Arrange
 
             // Act: invoke the service method with valid renter id
-            var result = this.userService.UserFullName(this.Renter.Id);
+            var result = await this.userService.UserFullNameAsync(this.Renter.Id);
 
             // Assert the returned result is correct
             var renterFullName = this.Renter.FirstName + " " + 
@@ -38,12 +38,12 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void All_ShouldReturnCorrectUsersAndAgents()
+        public async Task All_ShouldReturnCorrectUsersAndAgents()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.userService.All();
+            var result = await this.userService.AllAsync();
 
             // Assert the returned users' count is correct
             var usersCount = this.data.Users.Count();

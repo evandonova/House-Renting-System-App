@@ -19,9 +19,9 @@ namespace HouseRentingSystem.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult Become()
+        public async Task<IActionResult> Become()
         {
-            if (this.agents.ExistsById(this.User.Id()!))
+            if (await this.agents.ExistsByIdAsync(this.User.Id()!))
             {
                 return BadRequest();
             }
@@ -31,22 +31,22 @@ namespace HouseRentingSystem.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Become(BecomeAgentFormModel model)
+        public async Task<IActionResult> Become(BecomeAgentFormModel model)
         {
             var userId = this.User.Id()!;
 
-            if (this.agents.ExistsById(userId))
+            if (await this.agents.ExistsByIdAsync(userId))
             {
                 return BadRequest();
             }
 
-            if (this.agents.AgentWithPhoneNumberExists(model.PhoneNumber))
+            if (await this.agents.AgentWithPhoneNumberExistsAsync(model.PhoneNumber))
             {
                 ModelState.AddModelError(nameof(model.PhoneNumber),
                     "Phone number already exists. Enter another one.");
             }
 
-            if (this.users.UserHasRents(userId))
+            if (await this.users.UserHasRentsAsync(userId))
             {
                 ModelState.AddModelError("Error",
                     "You should have no rents to become an agent!");
@@ -57,7 +57,7 @@ namespace HouseRentingSystem.Web.Controllers
                 return View(model);
             }
 
-            this.agents.Create(userId, model.PhoneNumber);
+            await this.agents.CreateAsync(userId, model.PhoneNumber);
 
             TempData["message"] = "You have successfully become an agent!";
 

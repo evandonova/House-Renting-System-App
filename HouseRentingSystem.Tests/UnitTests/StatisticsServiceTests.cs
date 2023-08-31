@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using HouseRentingSystem.Services.Statistics;
-using NUnit.Framework;
+﻿using HouseRentingSystem.Services.Statistics;
 
 namespace HouseRentingSystem.Tests.UnitTests
 {
@@ -14,12 +12,12 @@ namespace HouseRentingSystem.Tests.UnitTests
             => this.statisticsService = new StatisticsService(this.data);
 
         [Test]
-        public void Total_ShouldReturnCorrectCounts()
+        public async Task Total_ShouldReturnCorrectCounts()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.statisticsService.Total();
+            var result = await this.statisticsService.TotalAsync();
 
             // Assert the returned result is not null
             Assert.IsNotNull(result);

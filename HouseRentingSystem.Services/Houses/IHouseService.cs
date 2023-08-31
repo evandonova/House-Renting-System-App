@@ -4,48 +4,48 @@ namespace HouseRentingSystem.Services.Houses
 {
     public interface IHouseService
     {
-        HouseQueryServiceModel All(
+        Task<HouseQueryServiceModel> AllAsync(
           string? category = null,
           string? searchTerm = null,
           HouseSorting sorting = HouseSorting.Newest,
           int currentPage = 1,
           int housesPerPage = 1);
 
-        IEnumerable<string> AllCategoriesNames();
+        Task<IEnumerable<string>> AllCategoriesNamesAsync();
 
-        IEnumerable<HouseServiceModel> AllHousesByAgentId(string agentId);
+        Task<IEnumerable<HouseServiceModel>> AllHousesByAgentIdAsync(string agentId);
 
-        IEnumerable<HouseServiceModel> AllHousesByUserId(string userId);
+        Task<IEnumerable<HouseServiceModel>> AllHousesByUserIdAsync(string userId);
 
-        bool Exists(int id);
+        Task<bool> ExistsAsync(int id);
 
-        HouseDetailsServiceModel HouseDetailsById(int id);
+        Task<HouseDetailsServiceModel> HouseDetailsByIdAsync(int id);
 
-        IEnumerable<HouseCategoryServiceModel> AllCategories();
+        Task<IEnumerable<HouseCategoryServiceModel>> AllCategoriesAsync();
 
-        bool CategoryExists(int categoryId);
+        Task<bool> CategoryExistsAsync(int categoryId);
 
-        int Create(string title, string address,
+        Task<int> CreateAsync(string title, string address,
             string description, string imageUrl, decimal price,
             int categoryId, string agentId);
 
-        bool HasAgentWithId(int houseId, string currentUserId);
+        Task<bool> HasAgentWithIdAsync(int houseId, string currentUserId);
 
-        int GetHouseCategoryId(int houseId);
+        Task<int> GetHouseCategoryIdAsync(int houseId);
 
-        void Edit(int houseId, string title, string address,
+        Task EditAsync(int houseId, string title, string address,
            string description, string imageUrl, decimal price, int categoryId);
 
-        void Delete(int houseId);
+        Task DeleteAsync(int houseId);
 
-        bool IsRented(int id);
+        Task<bool> IsRentedAsync(int id);
 
-        bool IsRentedByUserWithId(int houseId, string userId);
+        Task<bool> IsRentedByUserWithIdAsync(int houseId, string userId);
 
-        void Rent(int houseId, string userId);
+        Task RentAsync(int houseId, string userId);
 
-        void Leave(int houseId);
+        Task LeaveAsync(int houseId);
 
-        IEnumerable<HouseIndexServiceModel> LastThreeHouses();
+        Task<IEnumerable<HouseIndexServiceModel>> LastThreeHousesAsync();
     }
 }

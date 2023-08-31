@@ -28,9 +28,9 @@ namespace HouseRentingSystem.Web.Controllers
             this.cache = cache;
         }
 
-        public IActionResult All([FromQuery] AllHousesQueryModel query)
+        public async Task<IActionResult> All([FromQuery] AllHousesQueryModel query)
         {
-            var queryResult = this.houses.All(
+            var queryResult = await this.houses.AllAsync(
                 query.Category,
                 query.SearchTerm,
                 query.Sorting,
@@ -40,14 +40,14 @@ namespace HouseRentingSystem.Web.Controllers
             query.TotalHousesCount = queryResult.TotalHousesCount;
             query.Houses = queryResult.Houses;
 
-            var houseCategories = this.houses.AllCategoriesNames();
+            var houseCategories = await this.houses.AllCategoriesNamesAsync();
             query.Categories = houseCategories;
 
             return View(query);
         }
 
         [Authorize]
-        public IActionResult Mine()
+        public async Task<IActionResult> Mine()
         {
             if (this.User.IsInRole(AdminRoleName))
             {
@@ -58,28 +58,28 @@ namespace HouseRentingSystem.Web.Controllers
 
             var userId = this.User.Id()!;
 
-            if (this.agents.ExistsById(userId))
+            if (await this.agents.ExistsByIdAsync(userId))
             {
-                var currentAgentId = this.agents.GetAgentId(userId);
+                var currentAgentId = await this.agents.GetAgentIdAsync(userId);
 
-                myHouses = this.houses.AllHousesByAgentId(currentAgentId);
+                myHouses = await this.houses.AllHousesByAgentIdAsync(currentAgentId);
             }
             else
             {
-                myHouses = this.houses.AllHousesByUserId(userId);
+                myHouses = await this.houses.AllHousesByUserIdAsync(userId);
             }
 
             return View(myHouses);
         }
 
-        public IActionResult Details(int id, string information)
+        public async Task<IActionResult> Details(int id, string information)
         {
-            if (!this.houses.Exists(id))
+            if (!await this.houses.ExistsAsync(id))
             {
                 return BadRequest();
             }
 
-            var houseModel = this.houses.HouseDetailsById(id);
+            var houseModel = await this.houses.HouseDetailsByIdAsync(id);
 
             if(information != houseModel.GetInformation())
             {
@@ -91,29 +91,29 @@ namespace HouseRentingSystem.Web.Controllers
 
 
         [Authorize]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            if (!this.agents.ExistsById(this.User.Id()!))
+            if (!await this.agents.ExistsByIdAsync(this.User.Id()!))
             {
                 return RedirectToAction(nameof(AgentsController.Become), "Agents");
             }
 
             return View(new HouseFormModel
             {
-                Categories = this.houses.AllCategories()
+                Categories = await this.houses.AllCategoriesAsync()
             });
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Add(HouseFormModel model)
+        public async Task<IActionResult> Add(HouseFormModel model)
         {
-            if (!this.agents.ExistsById(this.User.Id()!))
+            if (!await this.agents.ExistsByIdAsync(this.User.Id()!))
             {
                 return RedirectToAction(nameof(AgentsController.Become), "Agents");
             }
 
-            if (!this.houses.CategoryExists(model.CategoryId))
+            if (!await this.houses.CategoryExistsAsync(model.CategoryId))
             {
                 this.ModelState.AddModelError(nameof(model.CategoryId),
                     "Category does not exist.");
@@ -121,14 +121,14 @@ namespace HouseRentingSystem.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Categories = this.houses.AllCategories();
+                model.Categories = await this.houses.AllCategoriesAsync();
 
                 return View(model);
             }
 
-            var agentId = this.agents.GetAgentId(this.User.Id()!);
+            var agentId = await this.agents.GetAgentIdAsync(this.User.Id()!);
 
-            var newHouseId = this.houses.Create(model.Title, model.Address,
+            var newHouseId = this.houses.CreateAsync(model.Title, model.Address,
                 model.Description, model.ImageUrl, model.PricePerMonth,
                 model.CategoryId, agentId);
 
@@ -139,46 +139,46 @@ namespace HouseRentingSystem.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (!this.houses.Exists(id))
+            if (!await this.houses.ExistsAsync(id))
             {
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+            if (!await this.houses.HasAgentWithIdAsync(id, this.User.Id()!) 
                 && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
 
-            var house = this.houses.HouseDetailsById(id);
+            var house = await this.houses.HouseDetailsByIdAsync(id);
 
-            var houseCategoryId = this.houses.GetHouseCategoryId(house.Id);
+            var houseCategoryId = await this.houses.GetHouseCategoryIdAsync(house.Id);
 
             var houseModel = this.mapper.Map<HouseFormModel>(house);
             houseModel.CategoryId = houseCategoryId;
-            houseModel.Categories = this.houses.AllCategories();
+            houseModel.Categories = await this.houses.AllCategoriesAsync();
 
             return View(houseModel);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Edit(int id, HouseFormModel model)
+        public async Task<IActionResult> Edit(int id, HouseFormModel model)
         {
-            if (!this.houses.Exists(id))
+            if (!await this.houses.ExistsAsync(id))
             {
                 return this.View();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+            if (!await this.houses.HasAgentWithIdAsync(id, this.User.Id()!) 
                 && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
 
-            if (!this.houses.CategoryExists(model.CategoryId))
+            if (!await this.houses.CategoryExistsAsync(model.CategoryId))
             {
                 this.ModelState.AddModelError(nameof(model.CategoryId),
                     "Category does not exist.");
@@ -186,12 +186,12 @@ namespace HouseRentingSystem.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Categories = this.houses.AllCategories();
+                model.Categories = await this.houses.AllCategoriesAsync();
 
                 return View(model);
             }
 
-            this.houses.Edit(id, model.Title, model.Address, model.Description,
+            await this.houses.EditAsync(id, model.Title, model.Address, model.Description,
                 model.ImageUrl, model.PricePerMonth, model.CategoryId);
 
             TempData["message"] = "You have successfully edited a house!";
@@ -201,20 +201,20 @@ namespace HouseRentingSystem.Web.Controllers
         }
 
         [Authorize]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (!this.houses.Exists(id))
+            if (!await this.houses.ExistsAsync(id))
             {
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(id, this.User.Id()!) 
+            if (!await this.houses.HasAgentWithIdAsync(id, this.User.Id()!) 
                 && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
 
-            var house = this.houses.HouseDetailsById(id);
+            var house = this.houses.HouseDetailsByIdAsync(id);
 
             var model = this.mapper.Map<HouseDetailsViewModel>(house);
 
@@ -223,20 +223,20 @@ namespace HouseRentingSystem.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Delete(HouseDetailsViewModel model)
+        public async Task<IActionResult> Delete(HouseDetailsViewModel model)
         {
-            if (!this.houses.Exists(model.Id))
+            if (!await this.houses.ExistsAsync(model.Id))
             {
                 return BadRequest();
             }
 
-            if (!this.houses.HasAgentWithId(model.Id, this.User.Id()!) 
+            if (!await this.houses.HasAgentWithIdAsync(model.Id, this.User.Id()!) 
                 && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
 
-            this.houses.Delete(model.Id);
+            await this.houses.DeleteAsync(model.Id);
 
             TempData["message"] = "You have successfully deleted a house!";
 
@@ -245,25 +245,25 @@ namespace HouseRentingSystem.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Rent(int id)
+        public async Task<IActionResult> Rent(int id)
         {
-            if (!this.houses.Exists(id))
+            if (!await this.houses.ExistsAsync(id))
             {
                 return BadRequest();
             }
 
-            if (this.agents.ExistsById(this.User.Id()!) 
+            if (await this.agents.ExistsByIdAsync(this.User.Id()!) 
                 && !this.User.IsAdmin())
             {
                 return Unauthorized();
             }
 
-            if (this.houses.IsRented(id))
+            if (await this.houses.IsRentedAsync(id))
             {
                 return BadRequest();
             }
 
-            this.houses.Rent(id, this.User.Id()!);
+            await this.houses.RentAsync(id, this.User.Id()!);
 
             this.cache.Remove(RentsCacheKey);
 
@@ -274,20 +274,20 @@ namespace HouseRentingSystem.Web.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Leave(int id)
+        public async Task<IActionResult> Leave(int id)
         {
-            if (!this.houses.Exists(id) ||
-                !this.houses.IsRented(id))
+            if (!await this.houses.ExistsAsync(id) ||
+                !await this.houses.IsRentedAsync(id))
             {
                 return BadRequest();
             }
 
-            if (!this.houses.IsRentedByUserWithId(id, this.User.Id()!))
+            if (!await this.houses.IsRentedByUserWithIdAsync(id, this.User.Id()!))
             {
                 return Unauthorized();
             }
 
-            this.houses.Leave(id);
+            await this.houses.LeaveAsync(id);
 
             this.cache.Remove(RentsCacheKey);
 

@@ -18,13 +18,13 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void All_ShouldReturnCorrectHouses()
+        public async Task All_ShouldReturnCorrectHouses()
         {
             // Arrange: create a variable for the search term
             var searchTerm = "First";
 
             // Act: invoke the service method with the term
-            var result = this.houseService.All(null, searchTerm);
+            var result = await this.houseService.AllAsync(null, searchTerm);
 
             // Assert the returned houses' count is correct
             var housesInDb = this.data.Houses
@@ -41,12 +41,12 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void AllCategoryNames_ShouldReturnCorrectResult()
+        public async Task AllCategoryNames_ShouldReturnCorrectResult()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.houseService.AllCategoriesNames();
+            var result = await this.houseService.AllCategoriesNamesAsync();
 
             // Assert the returned categories' count is correct
             var dbCategories = this.data.Categories;
@@ -58,13 +58,13 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void AllHousesByAgentId_ShouldReturnCorrectHouses()
+        public async Task AllHousesByAgentId_ShouldReturnCorrectHouses()
         {
             // Arrange: add a valid agent id to a variable
             var agentId = this.Agent.Id;
 
             // Act: invoke the service method with valid agent id
-            var result = this.houseService.AllHousesByAgentId(agentId.ToString());
+            var result = await this.houseService.AllHousesByAgentIdAsync(agentId.ToString());
 
             // Assert the returned result is not null
             Assert.IsNotNull(result);
@@ -76,13 +76,13 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void AllHousesByUserId_ShouldReturnCorrectHouses()
+        public async Task AllHousesByUserId_ShouldReturnCorrectHouses()
         {
             // Arrange: add a valid renter id to a variable
             var renterId = this.Renter.Id;
 
             // Act: invoke the service method with valid renter id
-            var result = this.houseService.AllHousesByUserId(renterId);
+            var result = await this.houseService.AllHousesByUserIdAsync(renterId);
 
             // Assert the returned result is not null
             Assert.IsNotNull(result);
@@ -94,26 +94,26 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void Exists_ShouldReturnCorrectTrue_WithValidId()
+        public async Task Exists_ShouldReturnCorrectTrue_WithValidId()
         {
             // Arrange: get a valid rented house id
             var houseId = this.RentedHouse.Id;
 
             // Act: invoke the service method with the valid id
-            var result = this.houseService.Exists(houseId);
+            var result = await this.houseService.ExistsAsync(houseId);
 
             // Assert the returned result is true
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void HouseDetailsById_ShouldReturnCorrectHouseData()
+        public async Task HouseDetailsById_ShouldReturnCorrectHouseData()
         {
             // Arrange: get a valid rented house id
             var houseId = this.RentedHouse.Id;
 
             // Act: invoke the service method with the valid id
-            var result = this.houseService.HouseDetailsById(houseId);
+            var result = await this.houseService.HouseDetailsByIdAsync(houseId);
 
             // Assert the returned result is not null
             Assert.IsNotNull(result);
@@ -125,12 +125,12 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void AllCategories_ShouldReturnCorrectCategories()
+        public async Task AllCategories_ShouldReturnCorrectCategories()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.houseService.AllCategories();
+            var result = await this.houseService.AllCategoriesAsync();
 
             // Assert the returned categories' count is correct
             var dbCategories = this.data.Categories;
@@ -142,20 +142,20 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void CategoryExists_ShouldReturnTrue_WithValidId()
+        public async Task CategoryExists_ShouldReturnTrue_WithValidId()
         {
             // Arrange: get a valid category id
             var categoryId = this.data.Categories.First().Id;
 
             // Act: invoke the service method with the valid id
-            var result = this.houseService.CategoryExists(categoryId);
+            var result = await this.houseService.CategoryExistsAsync(categoryId);
 
             // Assert the returned result is true
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void Create_ShouldCreateHouse()
+        public async Task Create_ShouldCreateHouse()
         {
             // Arrange: get the houses current count
             var housesInDbBefore = this.data.Houses.Count();
@@ -167,7 +167,7 @@ namespace HouseRentingSystem.Tests.UnitTests
             };
 
             // Act: invoke the service method with neccessary valid data
-            var newHouseId = this.houseService.Create(newHouse.Title, "Germany", 
+            var newHouseId = await this.houseService.CreateAsync(newHouse.Title, "Germany", 
                 "Best house", string.Empty, 2200.00M, 1, this.Agent.Id.ToString());
 
             // Assert the houses' current count has increased by 1
@@ -180,27 +180,27 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void HasAgentWithId_ShouldReturnTrue_WithValidId()
+        public async Task HasAgentWithId_ShouldReturnTrue_WithValidId()
         {
             // Arrange: get valid rented house's renter and agent ids
             var houseId = this.RentedHouse.Id;
             var userId = this.RentedHouse.Agent.User.Id;
 
             // Act: invoke the service method with valid ids
-            var result = this.houseService.HasAgentWithId(houseId, userId);
+            var result = await this.houseService.HasAgentWithIdAsync(houseId, userId);
 
             // Assert the returned result is true
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void GetHouseCategoryId_ShouldReturnCorrectId()
+        public async Task GetHouseCategoryId_ShouldReturnCorrectId()
         {
             // Arrange: get valid rented house's renter id
             var houseId = this.RentedHouse.Id;
 
             // Act: invoke the service method with valid id
-            var result = this.houseService.GetHouseCategoryId(houseId);
+            var result = await this.houseService.GetHouseCategoryIdAsync(houseId);
 
             // Assert the returned result is not null
             Assert.IsNotNull(result);
@@ -229,7 +229,7 @@ namespace HouseRentingSystem.Tests.UnitTests
             var changedAddress = "Sofia, Bulgaria";
 
             // Act: invoke the method with valid data and changed address
-            this.houseService.Edit(house.Id, house.Title, changedAddress,
+            this.houseService.EditAsync(house.Id, house.Title, changedAddress,
                 house.Description, house.ImageUrl, house.PricePerMonth, 
                 house.CategoryId);
 
@@ -259,7 +259,7 @@ namespace HouseRentingSystem.Tests.UnitTests
             var housesCountBefore = this.data.Houses.Count();
 
             // Act: invoke the service method with valid id
-            this.houseService.Delete(house.Id);
+            this.houseService.DeleteAsync(house.Id);
 
             // Assert the returned houses' cound has decreased by 1
             var housesCountAfter = this.data.Houses.Count();
@@ -271,28 +271,28 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void IsRented_ShouldReturnCorrectTrue_WithValidId()
+        public async Task IsRented_ShouldReturnCorrectTrue_WithValidId()
         {
             // Arrange: get a valid rented house id
             var houseId = this.RentedHouse.Id;
 
             // Act: invoke the service method with valid id
-            var result = this.houseService.IsRented(houseId);
+            var result = await this.houseService.IsRentedAsync(houseId);
 
             // Assert the returned result is true
             Assert.IsTrue(result);
         }
 
         [Test]
-        public void IsRentedByUserWithId_ShouldReturnCorrectTrue_WithValidId()
+        public async Task IsRentedByUserWithId_ShouldReturnCorrectTrue_WithValidId()
         {
             // Arrange: get valid rented house and renter ids
             var houseId = this.RentedHouse.Id;
             var renterId = this.RentedHouse.Renter!.Id;
 
             // Act: invoke the service method with valid ids
-            var result = this.houseService
-                .IsRentedByUserWithId(houseId, renterId);
+            var result = await this.houseService
+                .IsRentedByUserWithIdAsync(houseId, renterId);
 
             // Assert the returned result is true
             Assert.IsTrue(result);
@@ -317,7 +317,7 @@ namespace HouseRentingSystem.Tests.UnitTests
             var renterId = this.Renter.Id;
 
             // Act: invoke the service method with valid ids
-            this.houseService.Rent(house.Id, renterId);
+            this.houseService.RentAsync(house.Id, renterId);
 
             // Assert the house has correct data in the db
             var newHouseInDb = this.data.Houses.Find(house.Id);
@@ -342,7 +342,7 @@ namespace HouseRentingSystem.Tests.UnitTests
             this.data.SaveChanges();
 
             // Act: invoke the service method with valid id
-            this.houseService.Leave(house.Id);
+            this.houseService.LeaveAsync(house.Id);
 
             // Assert the house has correct data in the db
             var newHouseInDb = this.data.Houses.Find(house.Id);
@@ -351,12 +351,12 @@ namespace HouseRentingSystem.Tests.UnitTests
         }
 
         [Test]
-        public void LastThreeHouses_ShouldReturnCorrectHouses()
+        public async Task LastThreeHouses_ShouldReturnCorrectHouses()
         {
             // Arrange
 
             // Act: invoke the service method
-            var result = this.houseService.LastThreeHouses();
+            var result = await this.houseService.LastThreeHousesAsync();
 
             // Assert the retuned houses count is correct
             var housesInDb = this.data.Houses
