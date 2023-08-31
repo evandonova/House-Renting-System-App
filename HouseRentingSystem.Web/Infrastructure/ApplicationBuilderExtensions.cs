@@ -32,7 +32,7 @@ namespace HouseRentingSystem.Web.Infrastructure
                 var admin = await userManager.FindByNameAsync(AdminEmail);
                 await userManager.AddToRoleAsync(admin, role.Name);
             })
-                 .GetAwaiter()
+                .GetAwaiter()
                 .GetResult();
 
             return app;
